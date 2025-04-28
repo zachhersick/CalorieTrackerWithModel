@@ -68,9 +68,6 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-#evaluate model
-y_pred = (model.predict(X_test) > 0.5).astype("int32")
-
 #evaluate as regression
 test_mse, test_mae = model.evaluate(X_test, y_test, verbose=0)
 print(f"Test MSE: {test_mse:.2f}")
