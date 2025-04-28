@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Calorie Tracker</title>
+  <style>
+    label { display:block; margin-top:8px; }
+    input, select { margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <h1>Calorie Tracker</h1>
+
+  <fieldset>
+    <legend>User Info & Calculation</legend>
+    <label>Gender:
+      <input type="radio" name="gender" value="male" checked> Male
+      <input type="radio" name="gender" value="female"> Female
+    </label>
+    <label>Age: <input id="age" type="number" value="30"></label>
+    <label>Weight (kg): <input id="weight" type="number" value="70"></label>
+    <label>Height (cm): <input id="height" type="number" value="175"></label>
+    <label>Activity Level:
+      <select id="activity">
+        <option value="1">1: Sedentary</option>
+        <option value="2">2: Light</option>
+        <option value="3">3: Moderate</option>
+        <option value="4">4: Hard</option>
+        <option value="5">5: Very Hard</option>
+        <option value="6">6: Athlete</option>
+      </select>
+    </label>
+    <label>Method:
+      <select id="method">
+        <option value="bmi">BMI Formula</option>
+        <option value="nn">Neural Network</option>
+      </select>
+    </label>
+    <button id="calcBtn">Calculate</button>
+    <pre id="result"></pre>
+  </fieldset>
+
+  <fieldset>
+    <legend>Log a Meal</legend>
+    <label>Meal Name: <input id="mealName"></label>
+    <label>Calories: <input id="mealCalories" type="number"></label>
+    <label>Proteins (g): <input id="mealProteins" type="number"></label>
+    <label>Fats (g): <input id="mealFats" type="number"></label>
+    <label>Carbs (g): <input id="mealCarbs" type="number"></label>
+    <button id="logBtn">Log Meal</button>
+  </fieldset>
+
+  <h2>Today’s Meals</h2>
+  <ul id="mealsList"></ul>
+
+<script>
+async function calculate() {
+  const payload = {
+    gender: document.querySelector('input[name=gender]:checked').value,
+    age: +document.getElementById('age').value,
+    weight: +document.getElementById('weight').value,
+    height:+document.getElementById('height').value,
+    activity:+document.getElementById('activity').value,
+    method: document.getElementById('method').value
+  };
+  const res = await fetch('/api/calculate', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  const {calories} = await res.json();
+  document.getElementById('result').textContent =
+    `Total Calories: ${Math.round(calories)}`;
+}
+
+async function logMeal() {
+  // assume the last calculation’s user_id was returned and stored client-side
+  const user_id = 1; // replace with real user_id if needed
+  const payload = {
+    user_id,
+    meal_name: document.getElementById('mealName').value,
+    calories:+document.getElementById('mealCalories').value,
+    proteins:+document.getElementById('mealProteins').value,
+    fats:+document.getElementById('mealFats').value,
+    carbs:+document.getElementById('mealCarbs').value
+  };
+  await fetch('/api/log_meal', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  loadMeals();
+}
+
+async function loadMeals() {
+  const res = await fetch('/api/get_meals');
+  const {meals} = await res.json();
+  const ul = document.getElementById('mealsList');
+  ul.innerHTML = '';
+  meals.forEach(m => {
+    const li = document.createElement('li');
+    li.textContent = `${m.meal_name}: ${m.calories} kcal ` +
+                     `(${m.proteins}p/${m.fats}f/${m.carbs}c)`;
+    ul.appendChild(li);
+  });
+}
+
+document.getElementById('calcBtn').onclick = calculate;
+document.getElementById('logBtn').onclick  = logMeal;
+loadMeals();
+</script>
+</body>
+</html>
