@@ -41,19 +41,19 @@ model = keras.Sequential([
     layers.Dense(1)
 ])
 
-model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
 
 model.summary()
 
 #train model
 history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.2)
 
-#plot training/validation accuracy
-plt.plot(history.history['accuracy'], label='Training Accuracy')
-plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
-plt.title('Model Accuracy over Epochs')
+#plot training/validation mae
+plt.plot(history.history['mean_absolute_error'], label='Training Mean Absolute Error')
+plt.plot(history.history['val_mean_absolute_error'], label='validation Mean Absolute Error')
+plt.title('Model Mean Absolute Error over Epochs')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Mean Absolute Error')
 plt.legend()
 plt.grid(True)
 plt.show()
@@ -71,5 +71,7 @@ plt.show()
 #evaluate model
 y_pred = (model.predict(X_test) > 0.5).astype("int32")
 
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
+#evaluate as regression
+test_mse, test_mae = model.evaluate(X_test, y_test, verbose=0)
+print(f"Test MSE: {test_mse:.2f}")
+print(f"Test MAE: {test_mae:.2f}")
