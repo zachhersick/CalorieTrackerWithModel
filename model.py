@@ -8,6 +8,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 
+#load data
 df = pd.read_csv('diet_recommendations_dataset.csv', sep=',')
 print(df.columns.tolist())
 df.head()
