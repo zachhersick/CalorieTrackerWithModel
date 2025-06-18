@@ -14,7 +14,7 @@ print(df.columns.tolist())
 df.head()
 
 #dropping unused columns
-df = df.drop(columns=['Patient_ID', 'BMI', 'Disease_Type', 'Severity', 'Cholesterol_mg/dL', 'Blood_Pressure_mmHg', 'Glucose_mg/dL', 'Dietary_Restrictions', 'Allergies', 'Preferred_Cuisine', 'Weekly_Exercise_Hours', 'Adherence_to_Diet_Plan', 'Dietary_Nutrient_Imbalance_Score', 'Diet_Recommendation'])
+df = df.drop(columns=['Patient_ID', 'Disease_Type', 'Severity', 'Cholesterol_mg/dL', 'Blood_Pressure_mmHg', 'Glucose_mg/dL', 'Dietary_Restrictions', 'Allergies', 'Preferred_Cuisine', 'Adherence_to_Diet_Plan', 'Dietary_Nutrient_Imbalance_Score', 'Diet_Recommendation'])
 
 #categorical encoding
 df = pd.get_dummies(df, columns=['Gender', 'Physical_Activity_Level'], drop_first=True)
@@ -39,7 +39,10 @@ model = keras.Sequential([
     layers.Dropout(0.2),
     layers.Dense(64, activation='relu'),
     layers.Dropout(0.2),
-    layers.Dense(1)
+    layers.Dense(64, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(64, activation='relu'),
+    layers.Dropout(0.2),layers.Dense(1)
 ])
 
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])
